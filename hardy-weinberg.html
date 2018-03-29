@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <h2 id="console-h2"></h2>    
+    
+    
+    
+        <script>
+            
+            //Define allele frequencies:
+            let a1a1 = 0.15;
+            let a2a2 = 0.35;
+            let a1a2 = 1 - (a1a1 + a2a2);
+            //Define dominant allele frequency:
+            let p = a1a1 + (a1a2 / 2);
+            //Define frequency of recessive allele for trait:
+            let q = 1 - p;
+            
+            let gen0 = "generation 0: " + " " + a1a1 + " " + a1a2 + " " + a2a2;
+            
+            //Calculate Next Generation:
+            a1a1 = p * p;
+            a1a2 = 2 * p * q;
+            a2a2 = q * q;
+
+            let gen1 = "generation 1: " + " " + a1a1 + " " + a1a2 + " " + a2a2;
+
+            //print message to screen:
+            document.getElementById("console-h2").innerHTML = gen0 + "<br />"+ gen1;
+
+
+        </script>
+    </body>
+</html>
