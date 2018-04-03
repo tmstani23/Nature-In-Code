@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            //P is the allele frequency
+            let p = 0.5;
+            //N is number of individuals
+            let N = 1000;
+            let generations = 1000;
+            
+            //function that rounds an input number to n decimal places:
+            let roundNumber = (val, decimals) => {
+                let shiftDec = Math.pow(10, decimals);
+                return Math.round(val * shiftDec) / shiftDec;
+            }
+            
+            //Function that generates next generation and updates allele frequency:
+            function nextGen () {
+                //Set draws to 2 per individual:
+                let draws = 2 * N;
+                //Define alleles:
+                let a1 = 0;
+                let a2 = 0
+                
+                //Loop until number of draws is reached:
+                for (let i = 0; i < draws; i++) {
+                    //Random generate a number between 0 and 1
+                    //If allele freq(p) is less or equal add one to the total a1 alleles 
+                    //else add 1 to a2 alleles
+                    Math.random() <= p ? a1 += 1 : a2 += 1;
+                }
+                //Adjust allele freq based on a1 allele divided by number of total draws:
+                p = a1 / draws;  
+            }
+            //Loop until max generations and generate a generation each iteration:
+            for(let i = 0; i < generations; i++) {
+                nextGen();
+                console.log("Generation " + i, roundNumber(p, 4), roundNumber(1-p, 4));
+            }
+
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>
