@@ -2,13 +2,19 @@
 
 <html>
     <head>
-        <!-- Import D3Documents library: -->
+        <!-- Import D3Documents library: 
+        Notes on Genetic Drift: 
+            Genetic drift reduces the the variance of genetic material with time.
+            The larger the population size the more generations it takes to reduce genetic variation.
+            Bottlenecks in population or dramatic increas/decreases more dramatically effect variance than slow maximum population increases. 
+
+        -->
         <script src="https://d3js.org/d3.v5.min.js"></script>
         
     </head>
     <body>
         <script>
-            //Draw line chart function from d3:
+            //D3 Line Chart Code:
             function draw_line_chart(data,x_label,y_label,legend_values,x_max,y_max_flex) {
                 var margin = {top: 20, right: 20, bottom: 50, left: 50},
                     width = 700 - margin.left - margin.right,
@@ -150,23 +156,20 @@
                 d3.selectAll(".line").style("fill", "none").style("stroke-width","1.5px");   
             }
                 //Genetic Drift Code:
-                //P is the allele frequency
-                let p = 0.5;
-                //N is number of individuals
-                let N = 1000;
-                let generations = 1000;
+                //p is the allele frequency
+                let p;
+                //N is number of individuals:
+                let N = 100000;
+                let generations = 100;
                 let data = [];
+                let simulations = 10;
+                let populationSizes = [];
                 
-                //function that rounds an input number to n decimal places:
-                let roundNumber = (val, decimals) => {
-                    let shiftDec = Math.pow(10, decimals);
-                    return Math.round(val * shiftDec) / shiftDec;
-                }
                 
                 //Function that generates next generation and updates allele frequency:
-                function nextGen () {
+                function nextGen (sim_data, current_N) {
                     //Set draws to 2 per individual:
-                    let draws = 2 * N;
+                    let draws = 2 * current_N;
                     //Define alleles:
                     let a1 = 0;
                     let a2 = 0
@@ -181,15 +184,41 @@
                     //Adjust allele freq based on a1 allele divided by number of total draws:
                     p = a1 / draws;
                     //Add the p value to the data array:
-                    data.push(p);  
+                    sim_data.push(p);  
                 }
-                //Loop until max generations and generate a generation each iteration:
-                for(let i = 0; i < generations; i++) {
-                    nextGen();
-                    //console.log("Generation " + i, roundNumber(p, 4), roundNumber(1-p, 4));
+                
+                function simulation(simulation_counter) {
+                    p = 0.5;
+                    let population_size;
+                    //Loop until max generations and generate a generation each iteration:
+                    for(let i = 0; i < generations; i++) {
+                        //Add in bottleneck variance to the populations:
+                        i % 10 == 9 ? population_size = 10 : population_size = N;
+                        //Add the new population size to an array that holds all pop sizes:
+                        populationSizes.push(population_size);
+                        nextGen(data[simulation_counter], population_size);
+                    }
                 }
+                //Seed the data array with empty arrays up to simulation length
+                for(let i = 0; i < simulations; i++) {
+                    data.push([]);
+                    //Run simulations for each iteration:
+                    simulation(i);
+                }
+                
+                //Calculate the harmonic mean of all the populations:
+                function effectivePopulationSize(all_pops) {
+                    let denominator = 0;
+                    for (i = 0; i < all_pops.length; i++) {
+                        denominator = denominator + (1 / all_pops[i]);
+                    }
+                    return Math.round(all_pops.length / denominator);
+                }
+                //Ne is the harmonic mean variable:
+                let Ne = effectivePopulationSize(populationSizes);
+
                 //Draw the line chart:
-                draw_line_chart(data, "Generation", "P",["Population Size:", N, "Generations", generations]);
+                draw_line_chart(data, "Generation", "P",["Eff. Population Size:", Ne, "Generations", generations]);
     
         </script>
     </body>
