@@ -2,12 +2,17 @@
 
 <html>
     <head>
-        <!-- Import D3Documents library: 
+        <!--  
         Notes on Genetic Drift: 
-            Genetic drift reduces the the variance of genetic material with time.
-            The larger the population size the more generations it takes to reduce genetic variation.
-            Bottlenecks in population or dramatic increas/decreases more dramatically effect variance than slow maximum population increases. 
+            • Finite population size introduces randomness into evolutionary dynamics (genetic drift)
+            • Genetic drift acts to reduce genetic variation.
+            • The effect of drift is proportional to the population size: the smaller the population, the larger the effect of drift.
+            • Unless other forces counter it, genetic drift will reduce all genetic variation in every population.
+            • Drift is a slow process - it takes about 1.4N generations to reduce the genetic variation of a population by half.
+            • The effective population size is a key concept - it is the size of an ideal (Wright-Fisher) population that shows the same decay of genetic variation as the actual population of interest.
+            • The effective population size is often smaller than the actual population size, due to various reasons such as population size bottlenecks, or unequal sex ratios.
 
+        Import D3Documents library:
         -->
         <script src="https://d3js.org/d3.v5.min.js"></script>
         
