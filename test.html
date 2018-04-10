@@ -3,26 +3,22 @@
 <html>
     <head>
         <script>
-            var p = 5;
-            var values = [];
-            let roundNumber = (val, decimals) => {
-                    let shiftDec = Math.pow(10, decimals);
-                    return Math.round(val * shiftDec) / shiftDec;
-            }
-
-            for(let i = 0; i < 1000; i++) {
-                p = p + (Math.random() - 0.5);
+            
+            function children_in_family() {
+                let probabilities = [0.1, 0.26, 0.33, 0.18, 0.09, 0.03, 0.01];
                 
-                if(p < 0 || p > 10) {
-                    i = 1000;
+                let randomNum = Math.floor(Math.random() * 7);
+                console.log(randomNum + "random");
+                if(Math.random() <= probabilities[randomNum]) {
+                    return randomNum;
+                }
+                else {
+                    return children_in_family();
                 }
                 
-                
-                values.push(roundNumber(p, 1));
-                
             }
-            console.log(values);
-            //console.log(`This is ${values} displayed.`);
+            
+            console.log(children_in_family());
         </script>
     </head>
     <body>

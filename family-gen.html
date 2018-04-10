@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            let totalBoys = [0,0,0,0,0,0,0];
+            let totalGirls = [0,0,0,0,0,0,0];
+            let totalFamilies = 100;
+
+            //Function that generates numbers according to preset probabilities:
+            function children_in_family() {
+                let probabilities = [0.1, 0.26, 0.33, 0.18, 0.09, 0.03, 0.01];
+                //Get a random whole number between 0 and 6
+                let randomNum = Math.floor(Math.random() * 7);
+                //console.log(randomNum + "random");
+                //Return number if it is less than a selected probability from the array:
+                if(Math.random() <= probabilities[randomNum]) {
+                    return randomNum;
+                }
+                else {
+                    return children_in_family();
+                }
+                
+            }
+            function make_child() {
+                if(Math.random() <= 0.515) {
+                    return "boy";
+                }
+                else {
+                    return "girl";
+                }
+    
+            }
+
+            function boys_in_children(numChild) {
+                let numBoys = 0;
+                let children;
+                    for (i = 0; i < numChild; i++) {
+                        children = make_child();
+                        if(children == "boy") {
+                            numBoys ++;
+                        }
+                    }
+                return numBoys;
+            }
+            function genFamilies(totalFamilies) {
+                
+                //let familyArr = [];
+                for(let i = 0; i < totalFamilies; i++) {
+                    //generate children
+                    let genChildren = children_in_family();
+                    let numBoys = boys_in_children();
+                    let numGirls = numBoys - genChildren;
+                    assignChildren(numBoys, numGirls);
+                    //familyArr.push(genChildren);
+                    //get
+                }
+                //console.log(familyArr);
+                //getChildType();
+                //return familyArr;
+            }
+            function assignChildren(numB, numG) {
+                
+                totalBoys[numB] += 1;
+                    
+                totalGirls[numG] += 1;
+                 
+                console.log(totalBoys);
+                console.log(totalGirls);
+            }
+            //Function that assigns number of boys and girls in each family
+            // function getChildType() {
+            //     let boys = [];
+            //     let girls = [];
+            // }
+
+            genFamilies();
+            //boys_in_children(500);
+            //make_child();
+            
+            //children_in_family();
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

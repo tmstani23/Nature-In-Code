@@ -7,7 +7,11 @@
             let seqLength = 20;
             let originSeq = [];
             let sequences = []; //Overall Population
+            let numOfGen = 100;
+            let mutationRate = 0.0001; //Per Base and Generation
 
+            
+            //Generate first generation of sequences:
             function genFirstGeneration() {
                 genFirstSeq();
                 for(let i = 0; i < numOfSeq; i++){
@@ -15,18 +19,54 @@
                     sequences.push(originSeq.slice())
                 }
             }
+            //Function that generates sequences from random base pair letters:
             function genFirstSeq() {
                 for(let i = 0; i < seqLength; i++){
-                    originSeq.push(randomBase);
+                    originSeq.push(randomBase());
                 }
             }
+            //Function that returns a random base pair symbol:
             function randomBase() {
                 let bases = ["A", "G", "C", "T"];
                 let index = Math.floor(Math.random() * 4);
                 return bases[index];
             }
+            function printSequences() {
+                for(let i = 0; i < numOfSeq; i++) {
+                    print_sequence(sequences[i]);
+                }
+            }
+            function print_sequence(sequence) {
+                let seqString = "";
+                for(let i = 0; i < sequence.length; i++) {
+                    seqString = seqString + sequence[i];
+                }
+                console.log(seqString); 
+            }
+            function mutateBase() {
+                //Loop through generations:
+                for(let i = 0; i < numOfGen; i++) {
+                    //Each generation:
+                    for(let ii = 0; ii < seqLength; ii++) {
+                        //Each sequence:
+                        for(let iii = 0; iii < sequences[ii].length; iii++) {
+                            //Each base:
+                            //Roll random number 0-1
+                            //Change base if roll is less than mutation rate:
+                            if(Math.random() < mutationRate) {
+                                sequences[ii][iii] = randomBase();
+                            }
+                        }
+                    }
+                }
+            }
+            
 
             genFirstGeneration();
+            printSequences();
+            mutateBase();
+            printSequences();
+            //console.log(sequences);
             
         </script>
     </head>
