@@ -3,16 +3,17 @@
 <html>
     <head>
         <script>
+            //Create global arrays to hold total, boy, girl and family values:
             let totalBoys = [0,0,0,0,0,0,0];
             let totalGirls = [0,0,0,0,0,0,0];
-            let totalFamilies = 100;
+            let totalFamilies = 100000;
 
-            //Function that generates numbers according to preset probabilities:
+            //Function that generates children per family
             function children_in_family() {
+                //Create array to hold probability of 0-6 children per family:
                 let probabilities = [0.1, 0.26, 0.33, 0.18, 0.09, 0.03, 0.01];
                 //Get a random whole number between 0 and 6
                 let randomNum = Math.floor(Math.random() * 7);
-                //console.log(randomNum + "random");
                 //Return number if it is less than a selected probability from the array:
                 if(Math.random() <= probabilities[randomNum]) {
                     return randomNum;
@@ -20,65 +21,73 @@
                 else {
                     return children_in_family();
                 }
-                
             }
+            //Function that returns boy or girl based on realistic frequency:
             function make_child() {
-                if(Math.random() <= 0.515) {
-                    return "boy";
-                }
-                else {
-                    return "girl";
-                }
-    
+                return Math.random() <= 0.515 ? "boy" : "girl";
             }
-
+            //Function that determines number of boys in a family:
             function boys_in_children(numChild) {
                 let numBoys = 0;
                 let children;
+                    //Loop through number of children:
                     for (i = 0; i < numChild; i++) {
+                        //Create boys according to realistic frequency:
                         children = make_child();
+                        //If Boy is returned increase # of boys counter:
                         if(children == "boy") {
                             numBoys ++;
                         }
                     }
                 return numBoys;
             }
-            function genFamilies(totalFamilies) {
-                
-                //let familyArr = [];
+            //Function that generates families with realistic # of children and boy/girl ratios:
+            function genFamilies() {
+                //Create families up to amount specified in totalFamilies variable:
                 for(let i = 0; i < totalFamilies; i++) {
                     //generate children
                     let genChildren = children_in_family();
-                    let numBoys = boys_in_children();
-                    let numGirls = numBoys - genChildren;
+                    //Generate boys in children:
+                    let numBoys = boys_in_children(genChildren);
+                    //Calculate girls as leftover children in family:
+                    let numGirls = genChildren - numBoys;
+                    //Assign children to separate arrays of boys and girls:
                     assignChildren(numBoys, numGirls);
-                    //familyArr.push(genChildren);
-                    //get
                 }
-                //console.log(familyArr);
-                //getChildType();
-                //return familyArr;
+                //Convert assigned children into ratios of boys and girls per total families:
+                convertToFreq(totalBoys);
+                convertToFreq(totalGirls);
             }
+            //Function that adds total boys and girls to separate arrays:
             function assignChildren(numB, numG) {
-                
-                totalBoys[numB] += 1;
-                    
-                totalGirls[numG] += 1;
-                 
-                console.log(totalBoys);
-                console.log(totalGirls);
+                //Place number of boys/girls in array at correct location representing their frequency:
+                if(numB != undefined) {
+                    totalBoys[numB] ++;
+                }
+                if(numG != undefined){
+                    totalGirls[numG] ++;
+                }
             }
-            //Function that assigns number of boys and girls in each family
-            // function getChildType() {
-            //     let boys = [];
-            //     let girls = [];
-            // }
-
+            //Convert to frequency as # of children per total families:
+            function convertToFreq(arrBoyOrGirl){
+                let result;
+                let num;
+                for(let i = 0; i < arrBoyOrGirl.length; i++) {
+                    num = (arrBoyOrGirl[i] / totalFamilies) *100;
+                    num = roundNumber(num, 2);
+                    arrBoyOrGirl[i] = num;
+                }
+                return arrBoyOrGirl;
+            }
+            let roundNumber = (val, decimals) => {
+                let shiftDec = Math.pow(10, decimals);
+                return Math.round(val * shiftDec) / shiftDec;
+            }
             genFamilies();
-            //boys_in_children(500);
-            //make_child();
             
-            //children_in_family();
+            console.log(`Boys 0: ${totalBoys[0]}% 1: ${totalBoys[1]}% 2: ${totalBoys[2]}% 3: ${totalBoys[3]}% 4: ${totalBoys[4]}% 5: ${totalBoys[5]}% 6: ${totalBoys[6]}%`);
+            console.log(`Girls 0: ${totalGirls[0]}% 1: ${totalGirls[1]}% 2: ${totalGirls[2]}% 3: ${totalGirls[3]}% 4: ${totalGirls[4]}% 5: ${totalGirls[5]}% 6: ${totalGirls[6]}%`);
+            
         </script>
     </head>
     <body>
