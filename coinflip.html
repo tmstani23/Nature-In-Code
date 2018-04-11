@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            function tossCoins() {
+                let coins = 10;
+                let heads = 0;
+                let tails = 0;
+
+                let sum = 0;
+                //Loop through all the coins and apply random to assign heads or tails:
+                for (let i = 0; i < coins; i++) {
+                    //If random # between 0 and 1 <= 0.5 increase heads by 1 else increase tails:
+                    Math.random() <= 0.5 ? heads += 1 : tails += 1;
+                }
+                //If heads is 8 return true else return false:
+                return heads == 8 ? true : false;
+            }
+            
+            let repeats = 1000000;
+            let counter = 0;
+            //Toss coins 1000000 times and determine how many times # of heads = 8:
+            for (let i = 0; i < repeats; i++){
+                let desiredOutcome = tossCoins();
+                if (desiredOutcome) {
+                    counter += 1;
+                }
+                
+            }
+            
+            console.log("Getting 8 heads, 2 tails", (counter / repeats) * 100, "% of the time.");
+            
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

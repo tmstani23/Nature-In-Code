@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            let numOfSeq = 100;
+            let seqLength = 20;
+            let originSeq = [];
+            let sequences = []; //Overall Population
+            let numOfGen = 100;
+            let BASES = ["A", "G", "C", "T"];
+            let mutationRate = 0.0001; //Per Base and Generation
+
+            
+            //Generate first generation of sequences:
+            function genFirstGeneration() {
+                genFirstSeq();
+                for(let i = 0; i < numOfSeq; i++){
+                    //Copy original sequence array and add it to sequences array:
+                    sequences.push(originSeq.slice())
+                }
+            }
+            //Function that generates sequences from random base pair letters:
+            function genFirstSeq() {
+                for(let i = 0; i < seqLength; i++){
+                    originSeq.push(randomBase(""));
+                }
+            }
+            //Function that returns a random base pair symbol:
+            function randomBase(currentBase) {
+                let newBase;
+                let index;
+                //Generate new random base until it is
+                //different than current base:
+                do {
+                    index = Math.floor(Math.random() * 4);
+                    newBase = BASES[index];
+                } while (newBase == currentBase);
+                
+                return BASES[index];
+            }
+            function printSequences(title) {
+                console.log(title);
+                for(let i = 0; i < numOfSeq; i++) {
+                    print_sequence(sequences[i]);
+                }
+                console.log("");
+            }
+            function print_sequence(sequence) {
+                let seqString = "";
+                for(let i = 0; i < sequence.length; i++) {
+                    seqString = seqString + sequence[i];
+                }
+                console.log(seqString); 
+            }
+            function mutateBase() {
+                //Loop through generations:
+                for(let i = 0; i < numOfGen; i++) {
+                    //Each generation:
+                    for(let ii = 0; ii < seqLength; ii++) {
+                        //Each sequence:
+                        for(let iii = 0; iii < sequences[ii].length; iii++) {
+                            //Each base:
+                            //Roll random number 0-1
+                            //Change base if roll is less than mutation rate:
+                            if(Math.random() < mutationRate) {
+                                sequences[ii][iii] = randomBase(sequences[ii][iii]);
+                            }
+                        }
+                    }
+                }
+            }
+            
+
+            genFirstGeneration();
+            printSequences("Generation 0");
+            mutateBase();
+            printSequences("After 100 Generations");
+            //console.log(sequences);
+            
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

@@ -20,17 +20,34 @@
             //Define frequency of recessive allele for trait:
             let q = 1 - p;
             
+            
             let gen0 = "generation 0: " + " " + a1a1 + " " + a1a2 + " " + a2a2;
             
-            //Calculate Next Generation:
-            a1a1 = p * p;
-            a1a2 = 2 * p * q;
-            a2a2 = q * q;
+            let createNextGeneration = () => {
+                //Calculate Next Generation:
+                a1a1 = p * p;
+                a1a2 = 2 * p * q;
+                a2a2 = q * q;
+                return;
+            }
+            
+            let roundNumber = (val, decimals) => {
+                let shiftDec = Math.pow(10, decimals);
+                return Math.round(val * shiftDec) / shiftDec;
+            }
+            
+            for(let i = 0; i < 5; i++) {
+                createNextGeneration();
+                let gen = "generation: " + (i + 1) + ";" + roundNumber(a1a1, 2) + " " + roundNumber(a1a2, 2) + " " + roundNumber(a2a2, 2);
+            
+                //print message to screen:
+                console.log(gen);
+                //document.getElementById("console-h2").innerHTML = gen + "</br>";
+            }
 
-            let gen1 = "generation 1: " + " " + a1a1 + " " + a1a2 + " " + a2a2;
-
-            //print message to screen:
-            document.getElementById("console-h2").innerHTML = gen0 + "<br />"+ gen1;
+            
+            
+            
 
 
         </script>

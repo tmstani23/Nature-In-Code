@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            let pingC = 0;
+            let pongC = 0;
+
+            function ping() {
+                pingC++;
+                console.log("ping");
+                if(Math.random() < 0.9) {
+                    pong();
+                }
+            }
+
+            function pong() {
+                pongC++;
+                console.log("pong");
+                if(Math.random() < 0.9) {
+                    ping();
+                }
+            }
+            
+            ping();
+            console.log("Played " + pingC + " pings and " + pongC + " pongs");
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>
