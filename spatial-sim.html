@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+
+            let gridLength = 100;
+            let grid = [];
+            let alleleFreq = 0.5;
+            let maxMatingDistance = 1;
+            let a1a1 = 0;
+            let a2a2 = 0;
+            let a1a2 = 0;
+            let genCounter = 0;
+            
+            //Create a 2 grid of arrays:
+            function initGrid() {
+                //Assign q allele frequency variable:
+                let q = 1 - alleleFreq;
+                //create initial grid of arrays:
+                for(let i = 0; i < gridLength; i++) {
+                    grid[i] = [];
+                    //assign genotypes to each nested array baseed on freq:
+                    for (let ii = 0; ii < gridLength; ii++) {
+                        let randomNum = Math.random();
+                        if(randomNum < (alleleFreq * alleleFreq)) {
+                            grid[i][ii] = "A1A1";
+                            a1a1++;
+                        }
+                        else if(randomNum > 1 - (q * q)) {
+                            grid[i][ii] = "A2A2";
+                            a2a2++
+                        }
+                        else {
+                            grid[i][ii] = "A1A2";
+                            a1a2++;
+                        }
+                    }
+                }
+                console.log(a1a1, a1a2, a2a2);
+            }
+            //Function that creates mext generation
+            //
+            function runGeneration() {
+                let tempGrid = [];
+                //Loop through each individual in the main grid:
+                for(let i = 0; i < gridLength; i++) {
+                    tempGrid[i] = [];
+                    //Find nearby mating partner, mate and save to correct -
+                        //temp grid location
+                    for (let ii = 0; ii < gridLength; ii++) {
+                        //Get a mating partner:
+                        let matingPartner = pickMatingPartner(i, ii);
+                        //Assign offspring to correct temp grid location:
+                        tempGrid[i][ii] = getOffspring(grid[i][ii], matingPartner);
+                    }
+                }
+                //Map new offspring onto main grid at corresponding grid locations
+                    //Replaces parent population with offspring:
+                for(let i = 0; i < gridLength; i++) {
+                    for (let ii = 0; ii < gridLength; ii++) {
+                        grid[i][ii] = tempGrid[i][ii];
+                    }
+                }
+                genCounter++;
+            }
+
+            for (let i = 0; i < 100; i++) {
+                runGeneration();
+            }
+
+            initGrid();
+
+
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>
