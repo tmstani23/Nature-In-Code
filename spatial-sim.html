@@ -39,7 +39,99 @@
                 }
                 console.log(a1a1, a1a2, a2a2);
             }
-            //Function that creates mext generation
+            //Return random number in range:
+            function getRandomInt(min, max) {
+                //return range from 1 to max
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            //function that turns an array into a "circular" array of repeating indices:
+            function getBoundedIndex(index) {
+                let boundedIndex = index;
+                if(index < 0) {
+                    boundedIndex = index + gridLength;
+                }
+                if(index > 0) {
+                    boundedIndex = index - gridLength;
+                }
+                return boundedIndex;
+            }
+
+            //Function that chooses mating partner based on mating range:
+            function pickMatingPartner(i, ii) {
+                let j = getRandomInt(i - maxMatingDistance, i + maxMatingDistance);
+                let jj = getRandomInt(ii - maxMatingDistance, ii + maxMatingDistance);
+                
+                //Problem in get bounded index function check
+                j = getBoundedIndex(j);
+                jj = getBoundedIndex(jj);
+                
+                console.log(j, jj);
+                return grid[j][jj];
+            }
+            //Function that generates offspring based on allele mendelian inheritance probabilities:
+            function getOffspring(parent1, parent2) {
+                let p1 = parent1;
+                let p2 = parent2;
+                if(p1 == "A1A1" && p2 == "A1A1") {
+                    return "A1A1";
+                }
+                else if(p1 == "A1A1" && p2 == "A1A2" || p2 == "A1A1" && p1 == "A1A2") {
+                    if(Math.random() < 0.5) {
+                        return "A1A1";
+                    }
+                    else {
+                        return "A1A2";
+                    }
+                }
+                else if(p1 == "A1A1" && p2 == "A2A2" || p2 == "A1A1" && p1 == "A2A2") {
+                    return "A1A2";
+                }
+                else if(p1 == "A1A2" && p2 == "A1A2") {
+                    let randomNumber = Math.random();
+                    if(randomNumber < 0.25) {
+                        return "A1A1";
+                    }
+                    else if(randomNumber > 0.75) {
+                        return "A2A2";
+                    }
+                    else {
+                        return "A1A2";
+                    }
+                }
+                else if(p1 == "A2A2" && p2 == "A1A2" || p2 == "A2A2" && p1 == "A1A2") {
+                    if(Math.random() < 0.5) {
+                        return "A2A2";
+                    }
+                    else {
+                        return "A1A2";
+                    }
+                }
+                else if (p1 == "A2A2" && p2 == "A2A2") {
+                    return "A2A2";
+                }
+            }
+            function printData() {
+               a1a1 = 0;
+               a1a2 = 0;
+               a2a2 = 0;
+               for(let i = 0; i < gridLength; i++) {
+                    for(let ii = 0; ii < gridLength; ii++) {
+                        if(grid[i][ii] == "A1A1") {
+                            a1a1++;
+                        }
+                        else if(grid[i][ii] == "A1A2") {
+                            a1a2++
+                        }
+                        else {
+                            a2a2++;
+                        }
+                    } 
+               }
+               console.log("generation" + genCounter + ":");
+               console.log(a1a1, a1a2, a1a2); 
+            }
+            
+            //Function that creates next generation
             //
             function runGeneration() {
                 let tempGrid = [];
@@ -55,6 +147,7 @@
                         tempGrid[i][ii] = getOffspring(grid[i][ii], matingPartner);
                     }
                 }
+                printData();
                 //Map new offspring onto main grid at corresponding grid locations
                     //Replaces parent population with offspring:
                 for(let i = 0; i < gridLength; i++) {
