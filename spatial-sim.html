@@ -2,17 +2,101 @@
 
 <html>
     <head>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        
+    </head>
+    <body>
         <script>
+            // Notes on Mating:
+            // Mating is not always random - sexual selection or limited mating distances can substantially reduce the range of mates.
+            //     When offspring doesn’t disperse very far from the parental generation, there is a much higher chance of inbreeding.
+            //     The effect of inbreeding is a reduction in heterozygosity, which can be measured by the inbreeding coefficient F.
+
+
+            //Add d3 library functions:
+            function draw_grid(data,colors) {
+                var width = 600;
+                var height = 600;
+                var grid_length = data.length;
+
+                var svg = d3.select('body').append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+
+                var rw = Math.floor(width/grid_length);
+                var rh = Math.floor(height/grid_length);
+
+                var g = svg.selectAll('g')
+                        .data(data)
+                        .enter()
+                        .append('g')
+                        .attr('transform', function (d, i) {
+                            return 'translate(0, ' + (width/grid_length) * i + ')';
+                        });
+
+                g.selectAll('rect')
+                        .data(function (d) {
+                            return d;
+                        })
+                        .enter()
+                        .append('rect')
+                        .attr('x', function (d, i) {
+                            return (width/grid_length) * i;
+                        })
+                        .attr('width', rw)
+                        .attr('height', rh)
+                        .attr('class',function(d) {
+                            return d;
+                        });
+                if (!colors) {
+                    d3.selectAll(".A1A1").style("fill","#fff");
+                    d3.selectAll(".A1A2").style("fill","#2176c9");
+                    d3.selectAll(".A2A2").style("fill","#042029");
+                }
+                else {
+                    for (var i = 0; i < colors.length; i = i + 2) {
+                        d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                    }
+                }
+                }
+
+            function update_grid(data,colors){
+                var grid_length = data.length;
+                d3.select('svg').selectAll('g')
+                    .data(data)
+                    .selectAll('rect')
+                    .data(function (d) {
+                        return d;
+                    })
+                    .attr('class',function(d) {
+                        return d;
+                    });
+                if (!colors) {
+                    d3.selectAll(".A1A1").style("fill","#fff");
+                    d3.selectAll(".A1A2").style("fill","#2176c9");
+                    d3.selectAll(".A2A2").style("fill","#042029");
+                }
+                else {
+                    for (var i = 0; i < colors.length; i = i + 2) {
+                        d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                    }
+                }
+            }
+
 
             let gridLength = 100;
             let grid = [];
             let alleleFreq = 0.5;
+            //Number of grid squares around individual they can mate:
             let maxMatingDistance = 1;
             let a1a1 = 0;
             let a2a2 = 0;
             let a1a2 = 0;
             let genCounter = 0;
             
+
+
+
             //Create a 2 grid of arrays:
             function initGrid() {
                 //Assign q allele frequency variable:
@@ -37,7 +121,7 @@
                         }
                     }
                 }
-                console.log(a1a1, a1a2, a2a2);
+                //console.log(a1a1, a1a2, a2a2);
             }
             //Return random number in range:
             function getRandomInt(min, max) {
@@ -50,7 +134,7 @@
                 if(index < 0) {
                     boundedIndex = index + gridLength;
                 }
-                if(index > 0) {
+                if(index >= gridLength) {
                     boundedIndex = index - gridLength;
                 }
                 return boundedIndex;
@@ -60,12 +144,12 @@
             function pickMatingPartner(i, ii) {
                 let j = getRandomInt(i - maxMatingDistance, i + maxMatingDistance);
                 let jj = getRandomInt(ii - maxMatingDistance, ii + maxMatingDistance);
-                
+                //console.log(j, jj);
                 //Problem in get bounded index function check
                 j = getBoundedIndex(j);
                 jj = getBoundedIndex(jj);
                 
-                console.log(j, jj);
+                //console.log(j, jj);
                 return grid[j][jj];
             }
             //Function that generates offspring based on allele mendelian inheritance probabilities:
@@ -111,10 +195,10 @@
                 }
             }
             function printData() {
-               a1a1 = 0;
-               a1a2 = 0;
-               a2a2 = 0;
-               for(let i = 0; i < gridLength; i++) {
+                a1a1 = 0;
+                a1a2 = 0;
+                a2a2 = 0;
+                for(let i = 0; i < gridLength; i++) {
                     for(let ii = 0; ii < gridLength; ii++) {
                         if(grid[i][ii] == "A1A1") {
                             a1a1++;
@@ -126,15 +210,23 @@
                             a2a2++;
                         }
                     } 
-               }
-               console.log("generation" + genCounter + ":");
-               console.log(a1a1, a1a2, a1a2); 
+                }
+                console.log("generation" + genCounter + ":");
+                console.log(a1a1, a1a2, a1a2); 
+                let N = a1a1 + a1a2 + a2a2; //N is population size
+                let heterObserved = a1a2 / N;// Observed heterozygosity
+                let p = ((2 * a1a1) + a1a2) / (2 * N); //a1 allele frequency
+                let heterExpected = 2 * p * (1-p);
+                let F = (heterExpected - heterObserved) / heterExpected;
+                console.log("F = " + F);
+
             }
             
             //Function that creates next generation
             //
             function runGeneration() {
                 let tempGrid = [];
+                
                 //Loop through each individual in the main grid:
                 for(let i = 0; i < gridLength; i++) {
                     tempGrid[i] = [];
@@ -147,7 +239,7 @@
                         tempGrid[i][ii] = getOffspring(grid[i][ii], matingPartner);
                     }
                 }
-                printData();
+                
                 //Map new offspring onto main grid at corresponding grid locations
                     //Replaces parent population with offspring:
                 for(let i = 0; i < gridLength; i++) {
@@ -155,19 +247,21 @@
                         grid[i][ii] = tempGrid[i][ii];
                     }
                 }
+                printData();
                 genCounter++;
             }
-
-            for (let i = 0; i < 100; i++) {
-                runGeneration();
-            }
-
+            //Initialize the grid and populate the array with initial population:
             initGrid();
-
+            //Call D3 grid function to generate a visual grid on the screen:
+            draw_grid(grid);
+            
+            function simulateAndVisualize() {
+                runGeneration();
+                update_grid(grid);
+            }
+            //Run simulation and update visualization:
+            setInterval(simulateAndVisualize, 50);
 
         </script>
-    </head>
-    <body>
-        
     </body>
 </html>
