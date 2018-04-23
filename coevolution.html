@@ -2,7 +2,7 @@
 
 <html>
     <head>
-        <
+        
             <script src="https://d3js.org/d3.v5.min.js"></script>
 
             
@@ -10,6 +10,15 @@
     <body>
         <script>
 
+            //Notes on natural selection:
+            // Genotypes and alleles that give individuals a higher average chance to survive and reproduce will over time increase in frequency - this process is called evolution by natural selection.
+            // Fitness is a measure of the ability to survive and reproduce.
+            // In diploid individuals, there are three possible types of natural selection: directional selection, balancing selection, and disruptive selection.
+            // Directional selection will drive alleles to fixation.
+            // Balancing selection will maintain genetic diversity in a population.
+            // Disruptive selection will drive alleles to fixation, but which ones depends on initial conditions.
+            // Negative frequency-dependent selection (coevolution) leads to cyclical evolutionary dynamics (red queen dynamics).
+            // Red queen dynamics can be strongly affected by genetic drift.
             //D3 Line Chart Code:
             function draw_line_chart(data,x_label,y_label,legend_values,x_max,y_max_flex) {
                 var margin = {top: 20, right: 20, bottom: 50, left: 50},
@@ -169,18 +178,18 @@
                 //a1 allele frequency:
                 host_frequencies[0] = Math.random();
                 
-                data.push(host_frequencies[0]);
+                data.push([host_frequencies[0]]);
                 
                 //a2 allele frequency:
                 host_frequencies[1] = 1 - host_frequencies[0];
-                data.push(host_frequencies[1]);
+                data.push([host_frequencies[1]]);
                 //Parasite Frequencies:
                 //a1 allele frequency:
                 parasite_frequencies[0] = Math.random();
-                data.push(parasite_frequencies[0]);
+                data.push([parasite_frequencies[0]]);
                 //a2 allele frequency:
                 parasite_frequencies[1] = 1 - parasite_frequencies[0];
-                data.push(parasite_frequencies[1]);
+                data.push([parasite_frequencies[1]]);
                 
                             
             }
@@ -194,6 +203,7 @@
                         host_fitness += get_host_w_f(i, ii);
                     }
                     host_frequencies[i] = host_frequencies[i] * host_fitness;
+                    host_frequencies[i] = host_frequencies[i] + (Math.random() * 0.01);
                     sum_host_frequencies += + host_frequencies[i]
                 }
                 //Normalize
@@ -209,6 +219,7 @@
                         parasite_fitness += get_parasite_w_f(i, ii);
                     }
                     parasite_frequencies[i] = parasite_frequencies[i] * parasite_fitness;
+                    parasite_frequencies[i] = parasite_frequencies[i] + (Math.random() * 0.01);
                     sum_parasite_frequencies += + parasite_frequencies[i]
                 }
                 //Normalize
@@ -236,7 +247,7 @@
             for(let i = 0; i < generations; i++) {
                 host_selection();
                 parasite_selection();
-                console.log(data[0]);
+                //console.log(data[0]);
                 data[0].push(host_frequencies[0]);
                 data[1].push(host_frequencies[1]);
                 data[2].push(parasite_frequencies[0]);

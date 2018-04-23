@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+        <script>
+            
+            //Add d3 library functions:
+            function draw_grid(data,colors) {
+                var width = 600;
+                var height = 600;
+                var grid_length = data.length;
+
+                var svg = d3.select('body').append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+                var rw = Math.floor(width/grid_length);
+                var rh = Math.floor(height/grid_length);
+
+                var g = svg.selectAll('g')
+                        .data(data)
+                        .enter()
+                        .append('g')
+                        .attr('transform', function (d, i) {
+                        return 'translate(0, ' + (width/grid_length) * i + ')';
+                        });
+
+                g.selectAll('rect')
+                        .data(function (d) {
+                        return d;
+                        })
+                        .enter()
+                        .append('rect')
+                        .attr('x', function (d, i) {
+                        return (width/grid_length) * i;
+                        })
+                        .attr('width', rw)
+                        .attr('height', rh)
+                        .attr('class',function(d) {
+                        return d;
+                        });
+                if (!colors) {
+                    d3.selectAll(".A1A1").style("fill","#fff");
+                    d3.selectAll(".A1A2").style("fill","#2176c9");
+                    d3.selectAll(".A2A2").style("fill","#042029");
+                }
+                else {
+                    for (var i = 0; i < colors.length; i = i + 2) {
+                        d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                    }
+                }
+            }
+
+            function update_grid(data,colors){
+                    var grid_length = data.length;
+                    d3.select('svg').selectAll('g')
+                        .data(data)
+                        .selectAll('rect')
+                        .data(function (d) {
+                        return d;
+                        })
+                        .attr('class',function(d) {
+                        return d;
+                        });
+                    if (!colors) {
+                        d3.selectAll(".A1A1").style("fill","#fff");
+                        d3.selectAll(".A1A2").style("fill","#2176c9");
+                        d3.selectAll(".A2A2").style("fill","#042029");
+                    }
+                    else {
+                        for (var i = 0; i < colors.length; i = i + 2) {
+                            d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                        }
+                    }
+                }
+            
+            let grid_length = 100;
+            let grid = [];
+            let temp_grid = [];
+
+            let beta = 0.05; //infection probability per timestep per individual
+            let gamma = 0.1; //Recovery probability
+
+            function get_random_int(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            function init_grid() {
+                for(let i = 0; i < grid_length; i++) {
+                    grid[i] = [];
+                    for(let ii = 0; ii < grid_length; ii++) {
+                    grid[i][ii] = "S";
+                    }
+                }
+                grid[get_random_int(0,grid_length-1)][get_random_int(0,grid_length-1)] = "I";
+                //console.log(grid);
+            }
+            console.log(get_random_int(0, grid_length - 1))
+            init_grid();
+
+            draw_grid(grid, ["S","#dcdcdc","I","#c82605","R","#6fc401"]);
+            
+
+        </script>
+    </body>
+</html>
