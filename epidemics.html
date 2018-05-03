@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+        <script>
+            
+
+            //Notes on Epidemics:
+            // Infectious diseases can be modeled with SIR models, where individuals are either susceptible, infected, or have recovered.
+            // The dynamics of epidemics are shaped by how well the infection can be transmitted, and by how fast infected individuals recover.
+            // Because of the stochastic nature of transmission, not every patient 0 will trigger an outbreak. An epidemic may fizzle out on its own in the early stages.
+            // Even when an epidemic takes off, not everyone will get infected: the epidemic will eventually run out of susceptible individuals to infect.
+            // Small changes in the host contact structure can have dramatic effects on epidemics. Compared to a host structure with only local contacts, a small world host structure will generate dramatically larger epidemics
+            // We’ve also introduced a few widely used shortcuts for arithmetic manipulations in JavaScript.
+
+
+            let grid_length = 100;
+            let grid = [];
+            let temp_grid = [];
+            let num_sims = 100;
+            let data = [];
+            let rewiring_probability = 0.01;
+            let beta = 0.05; //infection probability per timestep per individual
+            let gamma = 0.15; //Recovery probability
+
+            function get_random_int(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            function init_grid() {
+                for(let i = 0; i < grid_length; i++) {
+                    grid[i] = [];
+                    for(let ii = 0; ii < grid_length; ii++) {
+                    grid[i][ii] = "S";
+                    }
+                }
+                grid[get_random_int(0,grid_length-1)][get_random_int(0,grid_length-1)] = "I";
+                //console.log(grid);
+            }
+            
+            //Function that updates a temp grid then replaces the initial grid after first update is finished
+            function run_time_step() {
+                //Loop through main grid and add each individual to temp grid:
+                for(let i = 0; i < grid_length; i++) {
+                    temp_grid[i] = [];
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        temp_grid[i][ii] = grid[i][ii];
+                    }
+                }
+                //Loop through main grid and expose neighbor individuals
+                for(let i = 0; i < grid_length; i++) {
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        if(grid[i][ii] == "I") {
+                            expose_neighbors(i, ii);
+                            try_recovery(i,ii);
+                        }
+                    }
+                }
+                //Copy newly updated grid to temp grid:
+                for(let i = 0; i < grid_length; i++) {
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        grid[i][ii] = temp_grid[i][ii];
+                    }
+                }
+            }
+            //function that checks within one space around an individual
+                //and runs try infection function:
+            function expose_neighbors(i, ii) {
+                for(let n_i = i - 1; n_i <= i + 1; n_i++) {
+                    for(let n_ii = ii - 1; n_ii <= ii + 1; n_ii++) {
+                        if(n_i == i && n_ii == ii) {
+                            continue;
+                        }
+                        if(Math.random() < rewiring_probability) {
+                            let random_i = get_random_int(0, grid_length-1);
+                            let random_ii = get_random_int(0, grid_length-1);
+                            try_infection(random_i, random_ii);
+                        }
+                        else {
+                            try_infection(get_bounded_index(n_i), get_bounded_index(n_ii));
+                        }
+                        
+                        //console.log(get_bounded_index(n_i), get_bounded_index(n_ii))
+                    }
+                }
+            }
+            //function that checks if individual is susceptible infect
+                //Adds infection
+            function try_infection(i, ii) {
+                if(grid[i][ii] == "S") {
+                   //Assign infection to individual if random is less than beta infection rate:
+                   if(Math.random() < beta) {
+                       temp_grid[i][ii] = "I";
+                   } 
+                }
+            }
+            function try_recovery(i, ii) {
+                if(grid[i][ii] == "I") {
+                   //Assign infection to individual if random is less than gamma recovery rate:
+                   if(Math.random() < gamma) {
+                       temp_grid[i][ii] = "R";
+                   } 
+                }
+            }
+
+            //function that turns an array into a "circular" array of repeating indices:
+            function get_bounded_index(index) {
+                let boundedIndex = index;
+                if(index < 0) {
+                    boundedIndex = index + grid_length;
+                }
+                if(index >= grid_length) {
+                    boundedIndex = index - grid_length;
+                }
+                return boundedIndex;
+            }
+            
+            function run_simulation() {
+                init_grid();
+                while(get_number_of_infected() > 0) {
+                    run_time_step();
+                }
+            }
+            
+            function get_number_of_infected() {
+                return get_num_in_state("I");
+            }
+            function get_number_of_susceptibles() {
+                return get_num_in_state("S");
+            }
+            function get_number_of_recovered() {
+                return get_num_in_state("R");
+            }
+            function get_num_in_state(state) {
+                let number_in_state = 0;
+                for(let i = 0; i < grid_length; i++) {
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        if(grid[i][ii] == state) {
+                            number_in_state += 1;
+                        }
+                    }
+                }
+                return number_in_state;
+            }
+            function calculate_avg_size(data) {
+                let sum = 0;
+                for(let i = 0; i < data.length; i++) {
+                    sum += data[i];
+                }
+                return sum / data.length;
+            }
+            
+            for(let i = 0; i < num_sims; i++) {
+                run_simulation();
+                data.push(get_number_of_recovered());
+            }
+            console.log(calculate_avg_size(data));
+        </script>
+    </body>
+</html>

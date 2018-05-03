@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            var N       = 50;
+            var alleles = 3;
+            var people  = [];
+            
+            
+            function random_number_to(num) {
+                return parseInt(Math.random() * num);
+
+            }
+
+            function random_allele() {
+                return random_number_to(alleles);
+            }
+
+            function random_individual() {
+                let resultArr = [];
+                let a1 = random_allele();
+                let a2 = random_allele();
+                resultArr.push(a1, a2);
+                return resultArr;
+            }
+            for(let i = 0; i < N; i++){
+                people.push(random_individual());
+            }
+            function random_individual_in_people() {
+                // let index = random_number_to(2);
+                //console.log(people[random_number_to(2)]);
+                return people[random_number_to(2)];
+            }
+            
+            random_individual_in_people();
+            //console.log(random_individual_in_people());
+            function random_individual_allele(individual) {
+                //let individual = random_individual_in_people();
+                //console.log(individual);
+                return individual[random_number_to(2)];
+            }
+            //console.log(random_individual_allele(random_individual_in_people()))
+            function random_allele_in_people() {
+                let randomPerson = random_individual_in_people();
+                return random_individual_allele(randomPerson);
+            }
+            console.log(random_allele_in_people());
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

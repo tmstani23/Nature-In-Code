@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            let population = 100;
+            let alleleFreq = 0.1;
+            let simulations = 100000;
+            let fixationsOfMutant = 0;
+            let totalGenerations = 0
+
+            function nextGeneration() {
+                let draws = 2 * population;
+                let allele1 = 0;
+                let allele2 = 0;
+                
+                for(let i = 0; i < draws; i++){
+                    Math.random() <= alleleFreq ? allele1 = allele1 + 1 : allele2++;
+                }
+                alleleFreq = allele1 / draws;
+            }
+            function untilFixation() {
+                alleleFreq = 1 / (2 * population);
+                let generations = 0;
+                do {
+                    nextGeneration();
+                    generations += 1;
+                } while (alleleFreq > 0 && alleleFreq < 1);
+                if (alleleFreq == 1) {
+                    fixationsOfMutant += 1;
+                    totalGenerations += generations;
+                }
+            }
+            for(let i = 0; i < simulations; i++){
+                    untilFixation();
+            }
+            console.log(totalGenerations / fixationsOfMutant);
+
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script>
+            var flips = 20;
+            var simulations = 1000;
+            
+            
+            
+            function coinFlip() {
+                let timesHeads = 0;
+                let simCount = 0;
+                for(let i = 0; i < simulations; i++) {
+                    let numHeads = 0;
+                    
+                    for(let ii = 0; ii < flips; ii++) {
+                        if(Math.random() > 0.5) {
+                        numHeads ++;
+                        }
+                    }
+                    //console.log(numHeads);
+                    if(numHeads <= 8) {
+                        timesHeads++;
+                    }
+                    simCount += 1;
+                }
+                console.log((timesHeads / simulations)); 
+            }
+            coinFlip();
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

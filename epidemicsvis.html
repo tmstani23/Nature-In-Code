@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+        <script>
+            
+            //Add d3 library functions:
+            function draw_grid(data,colors) {
+                var width = 600;
+                var height = 600;
+                var grid_length = data.length;
+
+                var svg = d3.select('body').append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+                var rw = Math.floor(width/grid_length);
+                var rh = Math.floor(height/grid_length);
+
+                var g = svg.selectAll('g')
+                        .data(data)
+                        .enter()
+                        .append('g')
+                        .attr('transform', function (d, i) {
+                        return 'translate(0, ' + (width/grid_length) * i + ')';
+                        });
+
+                g.selectAll('rect')
+                        .data(function (d) {
+                        return d;
+                        })
+                        .enter()
+                        .append('rect')
+                        .attr('x', function (d, i) {
+                        return (width/grid_length) * i;
+                        })
+                        .attr('width', rw)
+                        .attr('height', rh)
+                        .attr('class',function(d) {
+                        return d;
+                        });
+                if (!colors) {
+                    d3.selectAll(".A1A1").style("fill","#fff");
+                    d3.selectAll(".A1A2").style("fill","#2176c9");
+                    d3.selectAll(".A2A2").style("fill","#042029");
+                }
+                else {
+                    for (var i = 0; i < colors.length; i = i + 2) {
+                        d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                    }
+                }
+            }
+
+            function update_grid(data,colors){
+                    var grid_length = data.length;
+                    d3.select('svg').selectAll('g')
+                        .data(data)
+                        .selectAll('rect')
+                        .data(function (d) {
+                        return d;
+                        })
+                        .attr('class',function(d) {
+                        return d;
+                        });
+                    if (!colors) {
+                        d3.selectAll(".A1A1").style("fill","#fff");
+                        d3.selectAll(".A1A2").style("fill","#2176c9");
+                        d3.selectAll(".A2A2").style("fill","#042029");
+                    }
+                    else {
+                        for (var i = 0; i < colors.length; i = i + 2) {
+                            d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+                        }
+                    }
+                }
+            
+            let grid_length = 100;
+            let grid = [];
+            let temp_grid = [];
+
+            let beta = 0.05; //infection probability per timestep per individual
+            let gamma = 0.15; //Recovery probability
+
+            function get_random_int(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            function init_grid() {
+                for(let i = 0; i < grid_length; i++) {
+                    grid[i] = [];
+                    for(let ii = 0; ii < grid_length; ii++) {
+                    grid[i][ii] = "S";
+                    }
+                }
+                grid[get_random_int(0,grid_length-1)][get_random_int(0,grid_length-1)] = "I";
+                //console.log(grid);
+            }
+            
+            
+            //Function that updates a temp grid then replaces the initial grid after first update is finished
+            function run_time_step() {
+                //Loop through main grid and add each individual to temp grid:
+                for(let i = 0; i < grid_length; i++) {
+                    temp_grid[i] = [];
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        temp_grid[i][ii] = grid[i][ii];
+                    }
+                }
+                //Loop through main grid and expose neighbor individuals
+                for(let i = 0; i < grid_length; i++) {
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        if(grid[i][ii] == "I") {
+                            expose_neighbors(i, ii);
+                            try_recovery(i,ii);
+                        }
+                    }
+                }
+                //Copy newly updated grid to temp grid:
+                for(let i = 0; i < grid_length; i++) {
+                    for(let ii = 0; ii < grid_length; ii++) {
+                        grid[i][ii] = temp_grid[i][ii];
+                    }
+                }
+            }
+            //function that checks within one space around an individual
+                //and runs try infection function:
+            function expose_neighbors(i, ii) {
+                for(let n_i = i - 1; n_i <= i + 1; n_i++) {
+                    for(let n_ii = ii - 1; n_ii <= ii + 1; n_ii++) {
+                        if(n_i == i && n_ii == ii) {
+                            continue;
+                        }
+                        if(Math.random() < 0.001) {
+                            let random_i = get_random_int(0, grid_length-1);
+                            let random_ii = get_random_int(0, grid_length-1);
+                            try_infection(random_i, random_ii);
+                        }
+                        else {
+                            try_infection(get_bounded_index(n_i), get_bounded_index(n_ii));
+                        }
+                        
+                        //console.log(get_bounded_index(n_i), get_bounded_index(n_ii))
+                    }
+                }
+            }
+            //function that checks if individual is susceptible infect
+                //Adds infection
+            function try_infection(i, ii) {
+                if(grid[i][ii] == "S") {
+                   //Assign infection to individual if random is less than beta infection rate:
+                   if(Math.random() < beta) {
+                       temp_grid[i][ii] = "I";
+                   } 
+                }
+            }
+            function try_recovery(i, ii) {
+                if(grid[i][ii] == "I") {
+                   //Assign infection to individual if random is less than gamma recovery rate:
+                   if(Math.random() < gamma) {
+                       temp_grid[i][ii] = "R";
+                   } 
+                }
+            }
+
+            //function that turns an array into a "circular" array of repeating indices:
+            function get_bounded_index(index) {
+                let boundedIndex = index;
+                if(index < 0) {
+                    boundedIndex = index + grid_length;
+                }
+                if(index >= grid_length) {
+                    boundedIndex = index - grid_length;
+                }
+                return boundedIndex;
+            }
+            
+            //console.log(get_random_int(0, grid_length - 1))
+            init_grid();
+
+            draw_grid(grid, ["S","#dcdcdc","I","#c82605","R","#6fc401"]);
+
+
+            function simulate_and_visualize() {
+                run_time_step();
+                update_grid(grid, ["S","#dcdcdc","I","#c82605","R","#6fc401"]);
+                //console.log(grid);
+            }
+            
+            
+            setInterval(simulate_and_visualize, 25);
+
+            
+            
+
+        </script>
+    </body>
+</html>
